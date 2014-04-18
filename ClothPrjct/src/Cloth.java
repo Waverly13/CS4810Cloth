@@ -13,9 +13,8 @@ public class Cloth extends Obj{
 	}
 	
 	//takes in x1, z1, x2, z2, y, mass
-	public Cloth(double A, double B, double C, double D, double E, double F){
-		double[] p1 = {A, B};
-		double[] p2 = {D, E};
+	public Cloth(double x1, double z1, double x2, double z2, double y, double mass){
+		Point[][] cloth = new Point[(int)Math.abs(x1-x2)][(int)Math.abs(z1-z2)];
 		//establish the four corners
 		//create 2d grid of points
 		//deal with spring defs
