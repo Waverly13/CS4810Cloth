@@ -8,6 +8,8 @@
 //it also has the bare bones of a cloth class...it doesn't contain anything, just 
 //some notes on how it might work
 
+
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -18,11 +20,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
 
 
 public class Start {
 	
-	BufferedImage buff;
+	//BufferedImage buff;
 	static WritableRaster rast;
 	ArrayList<String> result = new ArrayList<String>();
 		
@@ -53,9 +57,12 @@ public class Start {
 			boolean end = hw.parse(filename);
 			if(end == false)
 				System.exit(0);
+			
+			BufferedImage buff = hw.png();
+			
 			hw.command();
 			Obj.intersections(objects);
-			hw.drawImage();
+			hw.drawImage(buff);
 		}
 		
 	}
@@ -135,15 +142,7 @@ public class Start {
 			String instruction = result.get(0);
 			System.out.println(instruction);
 			
-			if(instruction.equals("png")){
-				width = Integer.parseInt(result.get(1));
-				height = Integer.parseInt(result.get(2));
-				filename = result.get(3);
-				result.subList(0, 4).clear();
-				png(width, height);
-			}
-			
-			else if(instruction.equals("eye")){
+			if(instruction.equals("eye")){
 				double x = Double.parseDouble(result.get(1));
 				double y = Double.parseDouble(result.get(2));
 				double z = Double.parseDouble(result.get(3));
@@ -229,16 +228,19 @@ public class Start {
 				result.remove(0);
 		}
 		
-		
-		
 	}
 	
 	//----------------------------------------------------------------------------------
 	//creates the image buffer and the raster
-	public void png(int width, int height){
+	public BufferedImage png(){
+		
+		width = Integer.parseInt(result.get(1));
+		height = Integer.parseInt(result.get(2));
+		filename = result.get(3);
+		result.subList(0, 4).clear();
+		
 		//System.out.println("png");
-		buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-		//((Graphics2D)buff.getGraphics()).setBackground(new java.awt.Color(0,0,0,255));
+		BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
 		
 		rast = buff.getRaster();
 		int[] fill= {255, 255, 255, 255};
@@ -248,21 +250,37 @@ public class Start {
 				rast.setPixel(i, j, fill);
 			}
 		}
+		return buff;
 		//command();
 	}
 	
 	//------------------------------------------------------------------------------------
 	//takes the buffer and converts it to the final png
-	public void drawImage(){
+	public void drawImage(BufferedImage buff){
+		
+		String dirName = this.getClass().getClassLoader().getResource("").getPath();
+		String[] split;
+		split = dirName.split("/");
+		dirName = "";
+
+		for(int i = 1; i<split.length-1; i++){
+			dirName = dirName+split[i]+"/";
+		}
+		dirName = dirName+"cloth_output";
+		System.out.println(dirName);
+		
+		File dirFinal = new File(dirName, filename);
+		
 		try {
-			ImageIO.write(buff, "png", new File(filename));
-			//System.out.println("file written");
+			ImageIO.write(buff, "png", dirFinal);
 		} 
 		catch (IOException e) {
 			System.out.println("The file could not be created.");
 		}
-		//buff.getGraphics().clearRect(0,0,buff.getWidth(),buff.getHeight());
 		System.out.println("Done");
 	}
+	
+	//convert the folder of jpegs into a gif
+
 	
 }

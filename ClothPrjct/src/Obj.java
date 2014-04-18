@@ -6,14 +6,7 @@ import java.util.Arrays;
 
 public abstract class Obj {
 	
-	//Matrix matrix = new Matrix();
-	//DrawPixel pixel = new DrawPixel();
-	//Index index = new Index();
-	
-	//stores the
 	static ArrayList<double[]> model = new ArrayList<>();
-	
-	
 	
 	public static int[] colorConvert(double r, double g, double b){
 		if(r < 0)
@@ -40,6 +33,7 @@ public abstract class Obj {
 	abstract double[] intersect(double[] origin, double[] d);
 	
 	public static void intersections(ArrayList<Obj> objects){	
+		model.clear();
 		
 		for(int j=0; j<Start.width; j++){
 			for(int k=0; k<Start.height; k++){
