@@ -41,8 +41,9 @@ public class Start {
 	static double[] right = {1, 0, 0};
 	static double[] up = {0, 1, 0};
 	
-	Sphere sphere = new Sphere();
-	Plane plane = new Plane();
+	static double time = 10;
+	static double t = 0;
+	
 	
 	public static void main(String[] args){
 		Start hw = new Start();
@@ -61,8 +62,14 @@ public class Start {
 			BufferedImage buff = hw.png();
 			
 			hw.command();
-			Obj.intersections(objects);
-			hw.drawImage(buff);
+			while(t <= time){
+				Obj.intersections(objects);
+				hw.drawImage(buff);
+				for(int j=0; j<5; j++){
+					t += 0.5;
+					((Cloth) objects.get(2)).applyPhysics();
+				}
+			}
 		}
 		
 	}
@@ -102,6 +109,7 @@ public class Start {
 						&&!start.equals("bulb")
 						&&!start.equals("sphere")
 						&&!start.equals("plane")
+						&&!start.equals("cloth")
 					)
 				{
 					//System.out.println("delete line");
@@ -224,6 +232,19 @@ public class Start {
 				objects.add(plane1);
 			}
 			
+			else if(instruction.equals("cloth")){
+				double x1 = Double.parseDouble(result.get(1));
+				double y1 = Double.parseDouble(result.get(2));
+				double z1 = Double.parseDouble(result.get(3));
+				double x2 = Double.parseDouble(result.get(4));
+				double y2 = Double.parseDouble(result.get(5));
+				double z2 = Double.parseDouble(result.get(6));
+				double m = Double.parseDouble(result.get(7));
+				result.subList(0, 8).clear();
+				Cloth cloth = new Cloth(x1, y1, z1, x2, y2, z2, m);
+				objects.add(cloth);
+			}
+			
 			else 
 				result.remove(0);
 		}
@@ -269,7 +290,7 @@ public class Start {
 		dirName = dirName+"cloth_output";
 		System.out.println(dirName);
 		
-		File dirFinal = new File(dirName, filename);
+		File dirFinal = new File(dirName, filename+t+".png");
 		
 		try {
 			ImageIO.write(buff, "png", dirFinal);
