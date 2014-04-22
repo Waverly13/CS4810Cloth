@@ -63,11 +63,13 @@ public class Start {
 			
 			hw.command();
 			while(t <= time){
+				System.out.println("starting to create image");
 				Obj.intersections(objects);
 				hw.drawImage(buff);
 				for(int j=0; j<5; j++){
+					System.out.println("Moving forward in time");
 					t += 0.5;
-					((Cloth) objects.get(2)).applyPhysics();
+					((Cloth) objects.get(0)).applyPhysics();
 				}
 			}
 		}

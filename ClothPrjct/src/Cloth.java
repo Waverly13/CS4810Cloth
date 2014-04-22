@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Cloth extends Obj{
 
@@ -11,6 +12,8 @@ public class Cloth extends Obj{
 	int xMax, yMax, xMin, yMin;
 	double mass;
 
+	static ArrayList<Triangle> triangles = new ArrayList<Triangle>();
+	
 	public Cloth(){
 
 	}
@@ -18,31 +21,67 @@ public class Cloth extends Obj{
 	//takes in x1, y1, z1, x2, y2, z2, mass; assumes (x1, y1) is top left and (x2, y2) is bottom right
 	public Cloth(double x1, double y1, double z1, double x2, double y2, double z2, double mass){
 
-		sideLength = (int) (x2-x1);
-		clothArray = new Point[sideLength + 1][sideLength + 1];
-		xMin = (int) x1;
-		yMin = (int) y1;
-		xMax = (int) x2;
-		yMax = (int) y2;
+		//double s = ((double)(2*x1-Start.width))/Math.max(Start.width, Start.height);
+		//double t = ((double)(2*x2-Start.width))/Math.max(Start.width, Start.height);
+		double s1 = (x1*Math.max(Start.width, Start.height)+Start.width)/2;
+		double s2 = (x2*Math.max(Start.width, Start.height)+Start.width)/2;
+		double t1 = (y1*Math.max(Start.width, Start.height)-Start.height)/(-2);
+		double t2 = (y2*Math.max(Start.width, Start.height)-Start.height)/(-2);
+		System.out.println(s1+" "+s2);
+		System.out.println(t1+" "+t2);
+		sideLength = (int) Math.abs(s2-s1);
+		clothArray = new Point[sideLength+1][sideLength+1];
 		
-		for (int x = 0; x <= sideLength; x++){
-			for (int y = 0; y <= sideLength; y++){
-				clothArray[x][y] = new Point(xMin+x, yMin+y, 0);
+		for (int i = 0; i <= sideLength; i++){
+			for (int j = 0; j <= sideLength; j++){
+				clothArray[i][j] = new Point(x1+i, y1+j, 0);
 			}
 		}
-
-		//establish the four corners
-		//create 2d grid of points
-		//deal with spring defs
-
 	}
 
+	public void triangulate(){
+		
+		for(int i=0; i < sideLength; i++){
+			for(int j=0; j<sideLength; j++){
+				//get points for triangles
+				Point A = clothArray[i][j];
+				Point B = clothArray[i+1][j];
+				Point C = clothArray[i][j+1];
+				Point D = clothArray[i+1][j+1];
+				
+				//System.out.println(A.getX()+" "+A.getY()+" "+A.getZ());
+				//System.out.println("making tri");
+				
+				//convert to triangles
+				Triangle tri1 = new Triangle(A, B, C, 0, 255, 0);
+				Triangle tri2 = new Triangle(C, B, D, 0, 255, 0);
+				triangles.add(tri1);
+				triangles.add(tri2);
+				
+			}
+		}
+	}
+	
 	double[] intersect(double[] origin, double[] d){
-		//loop through all the points and apply physics
-		//probably do this five times per frame, start with 5 frames a second, probably a 10 second animation
-
-		double[] result = new double[13];
-		return result;
+		//System.out.println("side Length"+sideLength);
+		triangulate();
+		System.out.println(triangles.size());
+		double dist = Double.POSITIVE_INFINITY;
+		double[] interF = null;
+		for(int i=0; i<triangles.size(); i++){
+			Triangle now = triangles.get(i);
+			double[] inter = now.intersect(Start.eye, d);
+			if(inter == null)
+				continue;
+			else{
+				double newdist = inter[12];
+				if(newdist<dist){
+					dist = newdist;
+					interF = inter;
+				}
+			}
+		}
+		return interF;
 	}
 
 	void applyPhysics(){

@@ -7,6 +7,7 @@ import java.util.Arrays;
 public abstract class Obj {
 	
 	static ArrayList<double[]> model = new ArrayList<>();
+	//Cloth cloth = new Cloth();
 	
 	public static int[] colorConvert(double r, double g, double b){
 		if(r < 0)
@@ -40,11 +41,12 @@ public abstract class Obj {
 				//convert raster coordinate to 3d space
 				double s = ((double)(2*j-Start.width))/Math.max(Start.width, Start.height);
 				double t = ((double)(Start.height-2*k))/Math.max(Start.width, Start.height);
-				//System.out.println(j+" "+k+" "+s+" "+t);
+
 				//find distance vector
 				double[] d = Matrix.add(Start.forward, Matrix.add(Matrix.scalar(s, Start.right), 
 						Matrix.scalar(t, Start.up)));
 				d = Matrix.normalize(d);
+				
 				//for each shape in 'objects', call its intersection
 				//intersections return the location of the intersection, the normal, and the color
 				//maintain the current closest point
@@ -54,12 +56,12 @@ public abstract class Obj {
 					//System.out.println(i);
 					Obj thing = Start.objects.get(i);
 					double[] inter = thing.intersect(Start.eye, d);
+					//inter = {x, y, z, r, g, b, nx, ny, nz, identity hash code, value that solves for point}
 					//System.out.println(Arrays.toString(inter));
 					if(inter == null)
 						continue;
 					else{
 						double newdist = inter[12];
-						//System.out.println(dist+" "+newdist);
 						if(newdist<dist){
 							dist = newdist;
 							inter[9] = j;
@@ -69,6 +71,7 @@ public abstract class Obj {
 					}	
 				}
 				model.add(interF);
+				//System.out.println(Arrays.toString(interF));
 			}
 		}
 		//done going through objects, now have list of arrays containing the intersection
