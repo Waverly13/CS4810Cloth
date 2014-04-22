@@ -41,7 +41,7 @@ public class Start {
 	static double[] right = {1, 0, 0};
 	static double[] up = {0, 1, 0};
 	
-	static double time = 10;
+	static double time = 1;
 	static double t = 0;
 	
 	
@@ -51,28 +51,39 @@ public class Start {
 		File dir = new File("cloth_output");
 		dir.mkdir();
 		
-		//loop through all input files
-		for(int i=0; i<args.length; i++){
-			String filename = args[i];
-			System.out.println(filename);
-			boolean end = hw.parse(filename);
-			if(end == false)
-				System.exit(0);
+
+		String filename = args[0];
+		System.out.println(filename);
+		boolean end = hw.parse(filename);
+		if(end == false)
+			System.exit(0);
+		
+		BufferedImage buff = hw.png();
+		
+		hw.command();
+		
+		int count = 0;
+		while(t <= time){
+			System.out.println("starting to create image");
 			
-			BufferedImage buff = hw.png();
-			
-			hw.command();
-			while(t <= time){
-				System.out.println("starting to create image");
-				Obj.intersections(objects);
-				hw.drawImage(buff);
-				for(int j=0; j<5; j++){
-					System.out.println("Moving forward in time");
-					t += 0.5;
-					((Cloth) objects.get(0)).applyPhysics();
-				}
+			count++;
+			//System.out.println("Start "+count);
+			for(Obj o : objects) {
+				if (o instanceof Cloth) ((Cloth)o).kludgePoints();
 			}
+			Obj.intersections(objects);
+			Obj.Light();
+			hw.drawImage(buff);
+//			for(int j=0; j<5; j++){
+//				System.out.println("Moving forward in time");
+//				t += 0.5;
+//				((Cloth) objects.get(0)).applyPhysics();
+//			}
+			
+			t++;
 		}
+		
+	//	hw.drawImage(buff);
 		
 	}
 	
@@ -244,6 +255,14 @@ public class Start {
 				double m = Double.parseDouble(result.get(7));
 				result.subList(0, 8).clear();
 				Cloth cloth = new Cloth(x1, y1, z1, x2, y2, z2, m);
+				cloth.printArray();
+//				
+//				for(int i=0; i<cloth.clothArray.length-1; i++){
+//					for(int j=0; j<cloth.clothArray.length-1; j++){
+//						rast.setPixel((int)cloth.clothArray[i][j].getX(), (int)cloth.clothArray[i][j].getY(), new int[]{0, 255, 0, 255});
+//					}
+//				}
+				
 				objects.add(cloth);
 			}
 			
