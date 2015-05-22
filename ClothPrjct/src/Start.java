@@ -41,8 +41,9 @@ public class Start {
 	static double[] right = {1, 0, 0};
 	static double[] up = {0, 1, 0};
 	
-	static double time = 1;
+	static double time = 60;
 	static double t = 0;
+	static int fileCount = 1;
 	
 	
 	public static void main(String[] args){
@@ -61,30 +62,46 @@ public class Start {
 		BufferedImage buff = hw.png();
 		
 		hw.command();
+		boolean aboveFloor = true;
+		boolean lastIteration = false;
+		int timeOnFloor = 0;
 		
-		int count = 0;
-		while(t <= time){
-			System.out.println("starting to create image");
-			
-			count++;
-			//System.out.println("Start "+count);
-			for(Obj o : objects) {
-				if (o instanceof Cloth) ((Cloth)o).kludgePoints();
+		while(t <= time && !lastIteration){
+			if (!aboveFloor){
+				timeOnFloor++;
+				if (timeOnFloor == 3)
+					lastIteration = true;
 			}
+			System.out.println("starting to create image");
 			Obj.intersections(objects);
 			Obj.Light();
 			hw.drawImage(buff);
-//			for(int j=0; j<5; j++){
-//				System.out.println("Moving forward in time");
-//				t += 0.5;
-//				((Cloth) objects.get(0)).applyPhysics();
-//			}
-			
-			t++;
+			for(int j=0; j<5; j++){
+				System.out.println("Moving forward in time");
+				t += 0.05;
+				//Collisions.collide_plane();
+				((Cloth) objects.get(0)).applyPhysics();
+				aboveFloor = !Collisions.collide_plane();
+				Collisions.collide_sphere();
+			}
+			((Cloth) objects.get(0)).printArray();
+			buff = hw.png1();
 		}
 		
-	//	hw.drawImage(buff);
 		
+//		Obj.intersections(objects);
+//		Obj.Light();
+//		hw.drawImage(buff);
+//		((Cloth) objects.get(0)).printArray();
+//		for(int j=0; j<25; j++){
+//			((Cloth) objects.get(0)).applyPhysics();
+//		}
+//		buff = hw.png1();
+//		Obj.intersections(objects);
+//		Obj.Light();
+//		t = 1;
+//		hw.drawImage(buff);
+//		((Cloth) objects.get(0)).printArray();
 	}
 	
 	
@@ -252,17 +269,10 @@ public class Start {
 				double x2 = Double.parseDouble(result.get(4));
 				double y2 = Double.parseDouble(result.get(5));
 				double z2 = Double.parseDouble(result.get(6));
-				double m = Double.parseDouble(result.get(7));
+				double w = Double.parseDouble(result.get(7));
 				result.subList(0, 8).clear();
-				Cloth cloth = new Cloth(x1, y1, z1, x2, y2, z2, m);
+				Cloth cloth = new Cloth(x1, y1, z1, x2, y2, z2, w);
 				cloth.printArray();
-//				
-//				for(int i=0; i<cloth.clothArray.length-1; i++){
-//					for(int j=0; j<cloth.clothArray.length-1; j++){
-//						rast.setPixel((int)cloth.clothArray[i][j].getX(), (int)cloth.clothArray[i][j].getY(), new int[]{0, 255, 0, 255});
-//					}
-//				}
-				
 				objects.add(cloth);
 			}
 			
@@ -296,22 +306,42 @@ public class Start {
 		//command();
 	}
 	
+	public BufferedImage png1(){
+				
+		//System.out.println("png");
+		BufferedImage buff = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+		
+		rast = buff.getRaster();
+		int[] fill= {255, 255, 255, 255};
+		
+		for(int i = 0; i<width; i++){
+			for(int j = 0; j<height; j++){
+				rast.setPixel(i, j, fill);
+			}
+		}
+		
+		return buff;
+		//command();
+	}
+	
 	//------------------------------------------------------------------------------------
 	//takes the buffer and converts it to the final png
 	public void drawImage(BufferedImage buff){
 		
-		String dirName = this.getClass().getClassLoader().getResource("").getPath();
+		/*String dirName = this.getClass().getClassLoader().getResource("").getPath();
 		String[] split;
 		split = dirName.split("/");
 		dirName = "";
 
 		for(int i = 1; i<split.length-1; i++){
-			dirName = dirName+split[i]+"/";
+			dirName = dirName + split[i]+"/";
 		}
 		dirName = dirName+"cloth_output";
-		System.out.println(dirName);
+		System.out.println(dirName);*/
 		
-		File dirFinal = new File(dirName, filename+t+".png");
+		//File dirFinal = new File(filename+t+".png");
+		File dirFinal = new File(filename+fileCount+".png");
+		fileCount++;
 		
 		try {
 			ImageIO.write(buff, "png", dirFinal);

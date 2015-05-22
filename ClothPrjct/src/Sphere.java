@@ -4,10 +4,10 @@ import java.util.Arrays;
 public class Sphere extends Obj{
 
 	String circle;
-	double cx;
-	double cy;
-	double cz;
-	double radius;
+	static double cx;
+	static double cy;
+	static double cz;
+	static double radius;
 	double r;
 	double g;
 	double b;
@@ -91,6 +91,20 @@ public class Sphere extends Obj{
 		
 		return result;
 	}
+
+	public static double getRadius() {
+		return radius;
+	}
+
+	public static double getCx() {
+		return cx;
+	}
 	
+	public static double getCy() {
+		return cy;
+	}
+	public static double getCz() {
+		return cz;
+	}
 	
 }

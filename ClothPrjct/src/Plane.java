@@ -5,9 +5,9 @@ public class Plane extends Obj{
 	
 	String triangle;
 	double A;
-	double B;
+	static double B;
 	double C;
-	double D;
+	static double D;
 	double r;
 	double g;
 	double b;
@@ -85,6 +85,14 @@ public class Plane extends Obj{
 		result[12] = x;
 		
 		return result;
+	}
+
+	public static double getB() {
+		return B;
+	}
+
+	public static double getD() {
+		return D;
 	}
 	
 }

@@ -4,6 +4,11 @@ public class Point {
 	private double x, y, z;
 	private double[] color = new double[4];
 	private Vector surfaceNormal;
+	private double xVelocity;
+	private double yVelocity;
+	private double zVelocity;
+	private Vector force;
+
 	
 	public Point(double x, double y, double z){
 		
@@ -119,4 +124,44 @@ public class Point {
 		Point result = new Point(x, y, z);
 		return result;
 	}
+	
+	public void printPoint(){
+		System.out.println("("+this.x+", "+this.y+", "+this.z+")");
+	}
+	
+	public double getxVelocity() {
+		return xVelocity;
+	}
+
+	public void setxVelocity(double xVelocity) {
+		this.xVelocity = xVelocity;
+	}
+
+	public double getyVelocity() {
+		return yVelocity;
+	}
+
+	public void setyVelocity(double yVelocity) {
+		this.yVelocity = yVelocity;
+	}
+	
+	public double getzVelocity() {
+		return zVelocity;
+	}
+
+	public void setzVelocity(double zVelocity) {
+		this.zVelocity = zVelocity;
+	}
+
+	public Vector getForce() {
+		return force;
+	}
+
+	public void setForce(Vector force) {
+		this.force = force;
+	}
+	
+
+	
 }
+

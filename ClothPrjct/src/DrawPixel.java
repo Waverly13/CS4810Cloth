@@ -1,6 +1,3 @@
-//Megan Bishop
-//mgb5db
-
 import java.awt.image.WritableRaster;
 
 public class DrawPixel {

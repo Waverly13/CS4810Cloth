@@ -35,13 +35,18 @@ public abstract class Obj {
 	
 	public static void intersections(ArrayList<Obj> objects){	
 		model.clear();
+		Cloth.triangles.clear();
+//		Cloth c = (Cloth)(Start.objects.get(0));
+//		System.out.println("intersections");
+//		c.printArray();
 		
 		for(int j=0; j<Start.width; j++){
 			for(int k=0; k<Start.height; k++){
+
 				//convert raster coordinate to 3d space
 				double s = ((double)(2*j-Start.width))/Math.max(Start.width, Start.height);
 				double t = ((double)(Start.height-2*k))/Math.max(Start.width, Start.height);
-
+				
 				//find distance vector
 				double[] d = Matrix.add(Start.forward, Matrix.add(Matrix.scalar(s, Start.right), 
 						Matrix.scalar(t, Start.up)));
@@ -52,14 +57,22 @@ public abstract class Obj {
 				//maintain the current closest point
 				double dist = Double.POSITIVE_INFINITY;
 				double[] interF = new double[13];
+				interF[0] = 100;
+				
+				//int count = 0;
 				for(int i=0; i<Start.objects.size(); i++){
 					//System.out.println(i);
+					//count++;
+					//System.out.println(count);
 					Obj thing = Start.objects.get(i);
+					
 					double[] inter = thing.intersect(Start.eye, d);
+					
 					//inter = {x, y, z, r, g, b, nx, ny, nz, identity hash code, value that solves for point}
 					//System.out.println(Arrays.toString(inter));
-					if(inter == null)
+					if(inter == null){
 						continue;
+					}
 					else{
 						double newdist = inter[12];
 						if(newdist<dist){
@@ -70,15 +83,25 @@ public abstract class Obj {
 						}
 					}	
 				}
+				if(interF[0]==100)
+					continue;
 				model.add(interF);
-				//System.out.println(Arrays.toString(interF));
+				if(interF[9]!=0&&interF[10]!=0){
+					//System.out.println(Arrays.toString(interF));
+					//System.out.println(interF[10]);
+					
+				}
 			}
+		
+			
 		}
 		//done going through objects, now have list of arrays containing the intersection
 		//points, their rgb values, and the normals
-		
+	}
+	
+	public static void Light(){
 		//now going to bounce light rays off all these points
-		System.out.println("going to light");
+		//System.out.println("going to light");
 		if(Start.lights.isEmpty()){
 			while(!model.isEmpty()){
 				double[] point = model.get(0);
@@ -94,7 +117,11 @@ public abstract class Obj {
 			//for each item in model
 			//pass to each light source in 'lights'
 			for(int i=0; i<model.size(); i++){
+				
 				double[] point = model.get(i);
+//				if(point[9]!=0&&point[10]!=0)
+//					System.out.println("("+point[9]+", "+point[10]+") "+point[3]+" "+point[4]
+//							+" "+point[5]);
 				double[] color = {0, 0, 0};
 				double[] newcolor = new double[3];
 				for(int j=0; j<Start.lights.size(); j++){
@@ -107,21 +134,43 @@ public abstract class Obj {
 						//System.out.println(Arrays.toString(newcolor));
 						if(newcolor != null){
 							color = Matrix.add(color, newcolor);
+							//System.out.println(newcolor[1]);
+							
 						}
+						
 						//System.out.println("final color"+Arrays.toString(color));
 					}
 					else{
 						newcolor = Bulb(point, now);
 						if(newcolor != null){
 							color = Matrix.add(color, newcolor);
+							//System.out.println(newcolor[1]);
 						}
+			
 					}
+					
 				}
+				
 				//have rotated through all lights on this points
 				int j = (int)point[9];
 				int k = (int)point[10];
 				
 				int[] fiCol = colorConvert(color[0], color[1], color[2]);
+				
+//				fiCol[0] = Math.max(0,  Math.min(255, ((int)(point[12]*16))));
+//				fiCol[1] = Math.max(0,  Math.min(255, ((int)(point[12]*64))));
+//				fiCol[2] = Math.max(0,  Math.min(255, ((int)(point[12]*128))));
+				
+				double x1 = point[0];
+				double y1 = point[1];
+				double s1 = (x1*Math.max(Start.width, Start.height)+Start.width)/2;
+				double t1 = (y1*Math.max(Start.width, Start.height)-Start.height)/(-2);
+				
+				if(j!=0&&k!=0){
+					//System.out.println(j+", "+k);
+					//System.out.println(s1+", "+t1);
+				}
+				
 				DrawPixel.xyrgb(j, k, fiCol[0], fiCol[1], fiCol[2]);
 				
 			}
